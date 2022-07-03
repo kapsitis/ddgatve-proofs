@@ -43,3 +43,54 @@ theorem or_comm : (p ∨ q) → (q ∨ p) :=
   ))
 
 #print or_comm
+
+
+theorem noncon : ¬ (p ∧ ¬ p) := 
+  (fun hPandNotP: (p ∧ ¬ p) => 
+  have hP : p := And.left hPandNotP
+  have hNotP : ¬p := And.right hPandNotP
+  absurd hP hNotP)
+
+#print noncon 
+
+
+theorem modus_ponens : p → (p → q) → q := 
+  (fun hP : p => 
+  fun hP_Q : p → q => 
+  show q from hP_Q hP)
+
+#print modus_ponens
+
+
+
+theorem cond_ident : (¬ p ∨ q) → (p → q) := 
+  (
+    fun hNP_Q : ¬ p ∨ q => 
+    fun hP : p => 
+    Or.elim hNP_Q (
+      fun hNP : ¬ p => 
+      absurd hP hNP
+    )
+    (
+      fun hQ : q => 
+      show q from hQ
+    )
+  )
+
+#print cond_ident
+
+theorem prob3a : (p ∧ q) → (p ∨ r) :=
+  fun hPandQ : p ∧ q => 
+  have hP := And.left hPandQ 
+  show p ∨ r from Or.intro_left r hP 
+
+#print prob3a
+
+
+theorem prob3b : p → (q → p) := 
+  fun hP : p => 
+  fun hQ : q => 
+  show p from hP
+
+#print prob3b
+
