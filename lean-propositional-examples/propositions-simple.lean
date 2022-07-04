@@ -1,7 +1,7 @@
 /-
 https://leanprover.github.io/theorem_proving_in_lean4/propositions_and_proofs.html?search=
 -/
-variable {p q r : Prop}
+variable (p q r : Prop)
 
 
 theorem id_P : p → p :=
@@ -93,4 +93,47 @@ theorem prob3b : p → (q → p) :=
   show p from hP
 
 #print prob3b
+
+
+
+
+example : p ∧ q ↔ q ∧ p := 
+  Iff.intro (
+    fun hPQ : p ∧ q => 
+    have hP := And.left hPQ 
+    have hQ := And.right hPQ
+    show q ∧ p from And.intro hQ hP 
+  )
+  (
+    fun hQP : q ∧ p => 
+    have hQ := And.left hQP
+    have hP := And.right hQP
+    show p ∧ q from And.intro hP hQ
+  )
+
+
+
+example : p ∨ q ↔ q ∨ p := 
+  Iff.intro (
+    fun hPQ : p ∨ q => 
+    Or.elim hPQ (
+      fun hP : p => 
+      show q ∨ p from Or.intro_right q hP
+    )
+    (
+      fun hQ: q => 
+      show q ∨ p from Or.intro_left p hQ
+    )
+  )
+  (
+    fun hQP : q ∨ p => 
+    Or.elim hQP (
+      fun hQ : q => 
+      show p ∨ q from Or.intro_right p hQ
+    )
+    (
+      fun hP : p => 
+      show p ∨ q from Or.intro_left q hP
+    )
+  )
 
