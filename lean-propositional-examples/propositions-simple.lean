@@ -199,5 +199,123 @@ example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) :=
     )
   )
 
+example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := 
+Iff.intro (
+  fun hPQR : p ∧ (q ∨ r) => 
+  have hP : p := And.left hPQR
+  have hQR : q ∨ r := And.right hPQR
+  Or.elim hQR (
+    fun hQ : q => 
+    show (p ∧ q) ∨ (p ∧ r) from 
+    Or.intro_left (p ∧ r) (And.intro hP hQ)
+  )
+  (
+    fun hR : r => 
+    show (p ∧ q) ∨ (p ∧ r) from 
+    Or.intro_right (p ∧ q) (And.intro hP hR)
+  )
+)
+(
+  fun hPQPR : (p ∧ q) ∨ (p ∧ r) => 
+  Or.elim hPQPR (
+    fun hPQ : p ∧ q =>
+    have hP : p := And.left hPQ
+    have hQ : q := And.right hPQ 
+    show p ∧ (q ∨ r) from 
+    And.intro hP (Or.intro_left r hQ)
+  )
+  (
+    fun hPR : p ∧ r => 
+    have hP : p := And.left hPR
+    have hR : r := And.right hPR 
+    show p ∧ (q ∨ r) from 
+    And.intro hP (Or.intro_right q hR)
+  )
+)
 
+
+example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := 
+Iff.intro (
+  fun hPQR : p ∨ (q ∧ r) => 
+  Or.elim hPQR (
+    fun hP : p => 
+    have hPQ : p ∨ q := Or.intro_left q hP 
+    have hPR : p ∨ r := Or.intro_left r hP 
+    show (p ∨ q) ∧ (p ∨ r) from And.intro hPQ hPR 
+  )
+  (
+    fun hQR : q ∧ r => 
+    have hPorQ : p ∨ q := Or.intro_right p (And.left hQR)
+    have hPorR : p ∨ r := Or.intro_right p (And.right hQR)
+    show (p ∨ q) ∧ (p ∨ r) from And.intro hPorQ hPorR
+  )
+)
+(
+  fun hPQPR : (p ∨ q) ∧ (p ∨ r) => 
+  have hPQ : p ∨ q := And.left hPQPR
+  have hPR : p ∨ r := And.right hPQPR
+  Or.elim hPQ (
+    fun hP : p => 
+    show p ∨ (q ∧ r) from Or.intro_left (q ∧ r) hP
+  )
+  (
+    fun hQ : q => 
+    Or.elim hPR (
+      fun hP : p => 
+      show p ∨ (q ∧ r) from Or.intro_left (q ∧ r) hP
+    )
+    (
+      fun hR : r => 
+      show p ∨ (q ∧ r) from Or.intro_right p (And.intro hQ hR)
+    )
+  )
+)
+
+
+example : (p → (q → r)) ↔ (p ∧ q → r) := 
+Iff.intro (
+  fun hP_Q_R: p → (q → r) => 
+  fun hPQ : p ∧ q => 
+  have hP : p := And.left hPQ
+  have hQ : q := And.right hPQ
+  show r from hP_Q_R hP hQ 
+)
+(
+  fun hPQ_R : (p ∧ q → r) => 
+  fun hP : p => 
+  fun hQ : q => 
+  have hPQ : p ∧ q := And.intro hP hQ 
+  show r from hPQ_R hPQ 
+)
+
+
+example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) := 
+Iff.intro (
+  fun hPorQ_R: (p ∨ q) → r =>
+  have hP_R: p → r := (
+    fun hP : p => 
+    have hPorQ: p ∨ q := Or.intro_left q hP
+    show r from hPorQ_R hPorQ
+  )
+  have hQ_R: q → r := (
+    fun hQ : q => 
+    have hPorQ: p ∨ q := Or.intro_right p hQ
+    show r from hPorQ_R hPorQ
+  )
+  show (p → r) ∧ (q → r) from And.intro hP_R hQ_R
+)
+(
+  fun hPRandQR: (p → r) ∧ (q → r) => 
+  fun hPorQ: p ∨ q => 
+  have hPR: p → r := And.left hPRandQR 
+  have hQR: q → r := And.right hPRandQR
+  Or.elim hPorQ (
+    fun hP: p => 
+    show r from hPR hP
+  )
+  (
+    fun hQ: q => 
+    show r from hQR hQ
+  ) 
+)
 
