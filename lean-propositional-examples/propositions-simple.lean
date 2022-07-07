@@ -319,3 +319,74 @@ Iff.intro (
   ) 
 )
 
+example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := 
+Iff.intro (
+  fun hPQ : ¬ (p ∨ q) => 
+  have hnP: ¬p := (
+    fun hP : p => 
+    have hPorQ : p ∨ q := Or.intro_left q hP 
+    absurd hPorQ hPQ 
+  )
+  have hnQ: ¬q := (
+    fun hQ : q => 
+    have hPorQ : p ∨ q := Or.intro_right p hQ
+    absurd hPorQ hPQ
+  )
+  show ¬p ∧ ¬q from And.intro hnP hnQ
+)
+(
+  fun hNPandNQ : ¬p ∧ ¬q => 
+  have NP : ¬p := And.left hNPandNQ
+  have NQ : ¬q := And.right hNPandNQ
+  show ¬(p ∨ q) from (
+    fun PorQ : p ∨ q => 
+    Or.elim PorQ (
+      fun P : p => absurd P NP
+    )
+    (
+      fun Q : q => absurd Q NQ
+    )
+  )
+)
+
+
+
+example : ¬p ∨ ¬q → ¬(p ∧ q) := 
+fun hNPorNQ : ¬p ∨ ¬q => 
+Or.elim hNPorNQ (
+  fun hNP : ¬p => 
+  show ¬(p ∧ q) from (
+    fun PandQ: p ∧ q => 
+    absurd (And.left PandQ) hNP
+  )
+)
+(
+  fun hNQ : ¬q => 
+  show ¬(p ∧ q) from (
+    fun PandQ: p ∧ q => 
+    absurd (And.right PandQ) hNQ
+  )
+)
+
+
+example : ¬(p ∧ ¬p) := 
+fun hPandNP: p ∧ ¬p => 
+absurd (And.left hPandNP) (And.right hPandNP) 
+
+
+
+example : p ∧ ¬q → ¬(p → q) := 
+fun hPandNQ : p ∧ ¬q => 
+have hP: p := And.left hPandNQ
+have hNQ : ¬q := And.right hPandNQ 
+show ¬(p → q) from (
+  fun hP_Q : p → q =>
+  absurd (hP_Q hP) hNQ
+) 
+
+example : ¬p → (p → q) := (
+  fun hNP: ¬p => 
+  fun hP: p => 
+  show q from absurd hP hNP
+)
+
