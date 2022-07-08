@@ -390,3 +390,53 @@ example : ¬p → (p → q) := (
   show q from absurd hP hNP
 )
 
+
+example : (¬p ∨ q) → (p → q) := 
+fun hNPorQ : ¬ p ∨ q => 
+fun hP : p => 
+Or.elim hNPorQ (
+  fun hNP : ¬p => 
+  show q from absurd hP hNP
+)
+(
+  fun hQ : q => 
+  show q from hQ
+)
+
+example : p ∨ False ↔ p := 
+Iff.intro (
+  fun hPorFALSE: p ∨ False => 
+  Or.elim hPorFALSE (
+    fun hP : p => 
+    show p from hP 
+  )
+  (
+    fun hFALSE: False =>
+    show p from False.elim hFALSE
+  )
+)
+(
+  fun hP : p => 
+  show p ∨ False from Or.intro_left False hP
+)
+
+
+example : p ∧ False ↔ False := 
+Iff.intro (
+  fun hPandFALSE : p ∧ False => 
+  show False from And.right hPandFALSE
+)
+(
+  fun hFALSE: False => 
+  show p ∧ False from False.elim hFALSE
+)
+
+example : (p → q) → (¬q → ¬p) := 
+fun hP_Q: p → q => 
+fun hnQ: ¬q => 
+show ¬p from (
+  fun hP : p => 
+  have hQ : q := hP_Q hP 
+  absurd hQ hnQ
+)
+
