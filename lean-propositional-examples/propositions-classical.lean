@@ -160,13 +160,11 @@ example : ¬(p ↔ ¬p) := (
   fun hPnP : p ↔ ¬ p => 
   have hP_nP : p → ¬ p := Iff.mp hPnP
   have hnP_P : ¬ p → p := Iff.mpr hPnP
-  have hP_nnP : p → ¬¬p := (
+  have hnP : ¬ p := (
     fun hP: p => 
-    fun hnP: ¬p => 
-    absurd hP nhP
+    have hnP: ¬p := hP_nP hP
+    absurd hP hnP
   )
-  have hnP_nnP: ¬p → ¬¬ p := (
-    contra_positive1 (¬p) hP_nP
-  )
-
+  have hP: p := hnP_P hnP 
+  absurd hP hnP
 )
